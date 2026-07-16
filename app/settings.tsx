@@ -1,10 +1,14 @@
 import Constants from 'expo-constants';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Divider, List, Text } from 'react-native-paper';
+import { Divider, List, SegmentedButtons, Text } from 'react-native-paper';
+
+import { useThemePreference } from '@/src/context/ThemePreferenceContext';
+import type { AppColorScheme } from '@/src/theme/appTheme';
 
 export default function SettingsScreen() {
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const appName = Constants.expoConfig?.name ?? 'GoNext';
+  const { colorScheme, setColorScheme } = useThemePreference();
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
@@ -12,6 +16,38 @@ export default function SettingsScreen() {
       <Text variant="bodyMedium" style={styles.lead}>
         Дневник туриста — планируйте поездки и ведите маршрут офлайн.
       </Text>
+
+      <Divider style={styles.divider} />
+
+      <List.Section>
+        <List.Subheader>Оформление</List.Subheader>
+        <View style={styles.themeBlock}>
+          <Text variant="titleSmall" style={styles.themeLabel}>
+            Тема
+          </Text>
+          <SegmentedButtons
+            value={colorScheme}
+            onValueChange={(value) => {
+              void setColorScheme(value as AppColorScheme);
+            }}
+            buttons={[
+              {
+                value: 'light',
+                label: 'Светлая',
+                icon: 'white-balance-sunny',
+              },
+              {
+                value: 'dark',
+                label: 'Тёмная',
+                icon: 'moon-waning-crescent',
+              },
+            ]}
+          />
+          <Text variant="bodySmall" style={styles.themeHint}>
+            В тёмной теме фоновое изображение скрывается.
+          </Text>
+        </View>
+      </List.Section>
 
       <Divider style={styles.divider} />
 
@@ -92,6 +128,16 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: 8,
+  },
+  themeBlock: {
+    paddingHorizontal: 16,
+    gap: 10,
+  },
+  themeLabel: {
+    marginBottom: 2,
+  },
+  themeHint: {
+    opacity: 0.65,
   },
   guide: {
     paddingHorizontal: 16,

@@ -1,30 +1,38 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { useMemo } from 'react';
+import { PaperProvider } from 'react-native-paper';
 
 import { ScreenBackground } from '@/src/components/ScreenBackground';
 import { DatabaseProvider } from '@/src/context/DatabaseContext';
+import {
+  ThemePreferenceProvider,
+  useThemePreference,
+} from '@/src/context/ThemePreferenceContext';
+import { createAppTheme } from '@/src/theme/appTheme';
 
-const theme = {
-  ...MD3LightTheme,
-  colors: {
-    ...MD3LightTheme.colors,
-    primary: '#1B5E4A',
-    secondary: '#3D6B5A',
-    background: 'transparent',
-  },
-};
+function ThemedRoot() {
+  const { colorScheme } = useThemePreference();
+  const theme = useMemo(() => createAppTheme(colorScheme), [colorScheme]);
+  const isDark = colorScheme === 'dark';
 
-export default function RootLayout() {
   return (
     <PaperProvider theme={theme}>
       <DatabaseProvider>
-        <StatusBar style="dark" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <ScreenBackground>
           <Stack
             screenOptions={{
-              contentStyle: { backgroundColor: 'transparent' },
-              headerStyle: { backgroundColor: 'rgba(255, 255, 255, 0.85)' },
+              contentStyle: {
+                backgroundColor: isDark ? theme.colors.background : 'transparent',
+              },
+              headerStyle: {
+                backgroundColor: isDark
+                  ? theme.colors.elevation.level2
+                  : 'rgba(255, 255, 255, 0.85)',
+              },
+              headerTintColor: theme.colors.onSurface,
+              headerTitleStyle: { color: theme.colors.onSurface },
             }}
           >
             <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -46,5 +54,13 @@ export default function RootLayout() {
         </ScreenBackground>
       </DatabaseProvider>
     </PaperProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemePreferenceProvider>
+      <ThemedRoot />
+    </ThemePreferenceProvider>
   );
 }

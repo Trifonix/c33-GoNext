@@ -2,9 +2,13 @@ import type { ReactNode } from 'react';
 import {
   ImageBackground,
   StyleSheet,
+  View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { useTheme } from 'react-native-paper';
+
+import { useThemePreference } from '@/src/context/ThemePreferenceContext';
 
 const backgroundImage = require('@/assets/backgrounds/gonext-bg.png');
 
@@ -14,6 +18,19 @@ type Props = {
 };
 
 export function ScreenBackground({ children, style }: Props) {
+  const theme = useTheme();
+  const { colorScheme } = useThemePreference();
+
+  if (colorScheme === 'dark') {
+    return (
+      <View
+        style={[styles.background, { backgroundColor: theme.colors.background }, style]}
+      >
+        {children}
+      </View>
+    );
+  }
+
   return (
     <ImageBackground
       source={backgroundImage}

@@ -1,13 +1,19 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import { Appbar, Button, Text } from 'react-native-paper';
+import { Appbar, Button, Text, useTheme } from 'react-native-paper';
+
+import { useThemePreference } from '@/src/context/ThemePreferenceContext';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const theme = useTheme();
+  const { colorScheme } = useThemePreference();
+  const headerBackground =
+    colorScheme === 'dark' ? theme.colors.elevation.level2 : 'rgba(255, 255, 255, 0.85)';
 
   return (
     <View style={styles.container}>
-      <Appbar.Header elevated style={styles.header}>
+      <Appbar.Header elevated style={{ backgroundColor: headerBackground }}>
         <Appbar.Content title="GoNext" subtitle="Дневник туриста" />
       </Appbar.Header>
 
@@ -41,9 +47,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
   },
   content: {
     flex: 1,
