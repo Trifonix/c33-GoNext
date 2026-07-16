@@ -1,3 +1,4 @@
+import i18n from '@/src/i18n';
 import type { Trip, TripInput } from '@/src/types';
 
 import { deletePhotos } from '@/src/services/photos';
@@ -36,7 +37,7 @@ export async function createTrip(input: TripInput): Promise<Trip> {
 
   const trip = await getTripById(id);
   if (!trip) {
-    throw new Error('Не удалось создать поездку');
+    throw new Error(i18n.t('errors.createTrip'));
   }
   return trip;
 }
@@ -66,7 +67,7 @@ export async function getCurrentTrip(): Promise<Trip | null> {
 export async function updateTrip(id: string, input: Partial<TripInput>): Promise<Trip> {
   const existing = await getTripById(id);
   if (!existing) {
-    throw new Error('Поездка не найдена');
+    throw new Error(i18n.t('errors.tripNotFound'));
   }
 
   const nextTitle = input.title !== undefined ? input.title.trim() : existing.title;
@@ -96,7 +97,7 @@ export async function updateTrip(id: string, input: Partial<TripInput>): Promise
 
   const trip = await getTripById(id);
   if (!trip) {
-    throw new Error('Не удалось обновить поездку');
+    throw new Error(i18n.t('errors.updateTrip'));
   }
   return trip;
 }

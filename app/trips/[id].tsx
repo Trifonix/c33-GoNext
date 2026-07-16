@@ -11,6 +11,7 @@ import {
   Switch,
   Text,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { AppSnackbar } from '@/src/components/AppSnackbar';
 import { LoadingState } from '@/src/components/LoadingState';
@@ -33,6 +34,7 @@ type ViewMode = 'plan' | 'diary';
 export default function TripDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [route, setRoute] = useState<TripPlaceEnriched[]>([]);
@@ -87,7 +89,7 @@ export default function TripDetailsScreen() {
       }
       await loadTrip();
     } catch (err) {
-      setSnackbar(err instanceof Error ? err.message : 'Не удалось обновить текущую поездку');
+      setSnackbar(err instanceof Error ? err.message : t('trips.currentUpdateError'));
     }
   }
 
@@ -98,9 +100,9 @@ export default function TripDetailsScreen() {
     try {
       await addPlaceToTrip(trip.id, { placeId });
       await loadTrip();
-      setSnackbar('Место добавлено в маршрут');
+      setSnackbar(t('trips.placeAdded'));
     } catch (err) {
-      setSnackbar(err instanceof Error ? err.message : 'Не удалось добавить место');
+      setSnackbar(err instanceof Error ? err.message : t('trips.addPlaceError'));
     }
   }
 
@@ -110,7 +112,7 @@ export default function TripDetailsScreen() {
       await moveTripPlace(tripPlaceId, direction);
       await loadTrip();
     } catch (err) {
-      setSnackbar(err instanceof Error ? err.message : 'Не удалось изменить порядок');
+      setSnackbar(err instanceof Error ? err.message : t('trips.reorderError'));
     } finally {
       setBusyId(null);
     }
@@ -122,7 +124,7 @@ export default function TripDetailsScreen() {
       await markTripPlaceVisited(tripPlaceId, visited);
       await loadTrip();
     } catch (err) {
-      setSnackbar(err instanceof Error ? err.message : 'Не удалось обновить статус');
+      setSnackbar(err instanceof Error ? err.message : t('trips.statusError'));
     } finally {
       setBusyId(null);
     }
@@ -134,7 +136,7 @@ export default function TripDetailsScreen() {
       await removePlaceFromTrip(tripPlaceId);
       await loadTrip();
     } catch (err) {
-      setSnackbar(err instanceof Error ? err.message : 'Не удалось удалить место');
+      setSnackbar(err instanceof Error ? err.message : t('trips.removePlaceError'));
     } finally {
       setBusyId(null);
     }
@@ -150,7 +152,7 @@ export default function TripDetailsScreen() {
       setDeleteVisible(false);
       router.replace('/trips');
     } catch (err) {
-      setSnackbar(err instanceof Error ? err.message : 'Не удалось удалить поездку');
+      setSnackbar(err instanceof Error ? err.message : t('trips.deleteError'));
     } finally {
       setDeleting(false);
     }
@@ -161,7 +163,7 @@ export default function TripDetailsScreen() {
   }
 
   if (!trip) {
-    return <NotFoundState title="Поездка не найдена" onBack={() => router.back()} />;
+    return <NotFoundState title={t('trips.notFound')} onBack={() => router.back()} />;
   }
 
   const visibleRoute = viewMode === 'plan' ? route : diaryItems;
@@ -171,7 +173,7 @@ export default function TripDetailsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text variant="headlineSmall">{trip.title}</Text>
-          {trip.current ? <Chip icon="star">Текущая поездка</Chip> : null}
+          {trip.current ? <Chip icon="star">{t('common.currentTrip')}</Chip> : null}
         </View>
 
         {trip.description ? (
@@ -184,11 +186,11 @@ export default function TripDetailsScreen() {
           {formatDateRange(trip.startDate, trip.endDate)}
         </Text>
         <Text variant="bodySmall" style={styles.meta}>
-          Посещено {visitedCount} из {route.length}
+          {t('trips.visitedProgress', { visited: visitedCount, total: route.length })}
         </Text>
 
         <View style={styles.switchRow}>
-          <Text variant="bodyLarge">Сделать текущей</Text>
+          <Text variant="bodyLarge">{t('trips.makeCurrent')}</Text>
           <Switch value={trip.current} onValueChange={handleToggleCurrent} />
         </View>
 
@@ -196,14 +198,14 @@ export default function TripDetailsScreen() {
           value={viewMode}
           onValueChange={(value) => setViewMode(value as ViewMode)}
           buttons={[
-            { value: 'plan', label: 'План', icon: 'map-marker-path' },
-            { value: 'diary', label: 'Дневник', icon: 'book-open-variant' },
+            { value: 'plan', label: t('trips.plan'), icon: 'map-marker-path' },
+            { value: 'diary', label: t('trips.diary'), icon: 'book-open-variant' },
           ]}
         />
 
         {viewMode === 'diary' && diaryItems.length === 0 ? (
           <Text variant="bodyMedium" style={styles.emptyRoute}>
-            Пока нет посещённых мест. Отметьте места в режиме «План».
+            {t('trips.diaryEmpty')}
           </Text>
         ) : null}
 
@@ -226,7 +228,7 @@ export default function TripDetailsScreen() {
         {viewMode === 'plan' ? (
           <View style={styles.addActions}>
             <Button mode="contained" icon="plus" onPress={() => setPickerVisible(true)}>
-              Добавить из базы
+              {t('trips.addFromDatabase')}
             </Button>
             <Button
               mode="outlined"
@@ -235,17 +237,17 @@ export default function TripDetailsScreen() {
                 router.push({ pathname: '/places/new', params: { tripId: trip.id } })
               }
             >
-              Создать новое место
+              {t('trips.createNewPlace')}
             </Button>
           </View>
         ) : null}
 
         <View style={styles.tripActions}>
           <Button mode="outlined" icon="pencil" onPress={() => router.push(`/trips/${trip.id}/edit`)}>
-            Редактировать поездку
+            {t('trips.editTrip')}
           </Button>
           <Button mode="outlined" icon="delete" textColor="#B00020" onPress={() => setDeleteVisible(true)}>
-            Удалить поездку
+            {t('trips.deleteTrip')}
           </Button>
         </View>
       </ScrollView>
@@ -254,24 +256,24 @@ export default function TripDetailsScreen() {
         visible={pickerVisible}
         onDismiss={() => setPickerVisible(false)}
         excludeIds={excludePlaceIds}
-        title="Добавить место в маршрут"
+        title={t('trips.addPlaceTitle')}
         onSelect={(place) => handleAddPlace(place.id)}
       />
 
       <Portal>
         <Dialog visible={deleteVisible} onDismiss={() => setDeleteVisible(false)}>
-          <Dialog.Title>Удалить поездку?</Dialog.Title>
+          <Dialog.Title>{t('trips.deleteTitle')}</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyMedium">
-              «{trip.title}» и все записи дневника будут удалены без возможности восстановления.
+              {t('trips.deleteMessage', { title: trip.title })}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteVisible(false)} disabled={deleting}>
-              Отмена
+              {t('common.cancel')}
             </Button>
             <Button onPress={handleDeleteTrip} loading={deleting} textColor="#B00020">
-              Удалить
+              {t('common.delete')}
             </Button>
           </Dialog.Actions>
         </Dialog>

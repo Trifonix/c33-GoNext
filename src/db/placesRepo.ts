@@ -1,9 +1,10 @@
+import i18n from '@/src/i18n';
+import { deletePhotos } from '@/src/services/photos';
 import type { Place, PlaceInput } from '@/src/types';
 
 import { getDatabase } from './database';
 import { createId } from './ids';
 import { mapPlaceRow, type PlaceRow, stringifyPhotos } from './mappers';
-import { deletePhotos } from '@/src/services/photos';
 
 export async function createPlace(input: PlaceInput): Promise<Place> {
   const db = await getDatabase();
@@ -27,7 +28,7 @@ export async function createPlace(input: PlaceInput): Promise<Place> {
 
   const place = await getPlaceById(id);
   if (!place) {
-    throw new Error('Не удалось создать место');
+    throw new Error(i18n.t('errors.createPlace'));
   }
   return place;
 }
@@ -49,7 +50,7 @@ export async function getPlaceById(id: string): Promise<Place | null> {
 export async function updatePlace(id: string, input: Partial<PlaceInput>): Promise<Place> {
   const existing = await getPlaceById(id);
   if (!existing) {
-    throw new Error('Место не найдено');
+    throw new Error(i18n.t('errors.placeNotFound'));
   }
 
   const next: Place = {
@@ -93,7 +94,7 @@ export async function deletePlace(id: string): Promise<void> {
     id,
   );
   if (used && used.count > 0) {
-    throw new Error('Место используется в поездке и не может быть удалено');
+    throw new Error(i18n.t('errors.placeInTrip'));
   }
 
   await db.runAsync('DELETE FROM places WHERE id = ?', id);

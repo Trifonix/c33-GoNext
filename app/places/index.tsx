@@ -2,6 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Card, Chip, FAB, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/src/components/EmptyState';
 import { LoadingState } from '@/src/components/LoadingState';
@@ -10,6 +11,8 @@ import type { Place } from '@/src/types';
 import { formatCoordinates } from '@/src/utils/coordinates';
 
 function PlaceListItem({ place, onPress }: { place: Place; onPress: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <Card style={styles.card} onPress={onPress}>
       <Card.Content>
@@ -20,10 +23,10 @@ function PlaceListItem({ place, onPress }: { place: Place; onPress: () => void }
           </Text>
         ) : null}
         <View style={styles.chips}>
-          {place.visitlater ? <Chip compact icon="map-marker-path">Посетить</Chip> : null}
-          {place.liked ? <Chip compact icon="heart">Нравится</Chip> : null}
+          {place.visitlater ? <Chip compact icon="map-marker-path">{t('places.visit')}</Chip> : null}
+          {place.liked ? <Chip compact icon="heart">{t('places.like')}</Chip> : null}
           {place.photos.length > 0 ? (
-            <Chip compact icon="image">{place.photos.length}</Chip>
+            <Chip compact icon="image">{t('common.photoCount', { count: place.photos.length })}</Chip>
           ) : null}
         </View>
         <Text variant="bodySmall" style={styles.coords}>
@@ -36,6 +39,7 @@ function PlaceListItem({ place, onPress }: { place: Place; onPress: () => void }
 
 export default function PlacesListScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,10 +65,7 @@ export default function PlacesListScreen() {
   return (
     <View style={styles.container}>
       {places.length === 0 ? (
-        <EmptyState
-          title="Пока нет мест"
-          message="Добавьте интересные места — их можно будет использовать при планировании поездок."
-        />
+        <EmptyState title={t('places.emptyTitle')} message={t('places.emptyMessage')} />
       ) : (
         <FlatList
           data={places}
@@ -81,7 +82,7 @@ export default function PlacesListScreen() {
 
       <FAB
         icon="plus"
-        label="Добавить"
+        label={t('places.add')}
         style={styles.fab}
         onPress={() => router.push('/places/new')}
       />

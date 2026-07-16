@@ -8,6 +8,7 @@ import {
   Portal,
   Text,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { AppSnackbar } from '@/src/components/AppSnackbar';
 import { LoadingState } from '@/src/components/LoadingState';
@@ -22,6 +23,7 @@ import { formatDateTime } from '@/src/utils/date';
 export default function PlaceDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [place, setPlace] = useState<Place | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,13 +53,13 @@ export default function PlaceDetailsScreen() {
 
   async function handleOpenMap() {
     if (!place?.dd) {
-      setSnackbar('У места не указаны координаты');
+      setSnackbar(t('places.noCoordinates'));
       return;
     }
     try {
       await openOnMap(place.dd, place.name);
     } catch {
-      setSnackbar('Не удалось открыть карту');
+      setSnackbar(t('places.mapOpenError'));
     }
   }
 
@@ -71,7 +73,7 @@ export default function PlaceDetailsScreen() {
       setDeleteVisible(false);
       router.replace('/places');
     } catch (err) {
-      setSnackbar(err instanceof Error ? err.message : 'Не удалось удалить место');
+      setSnackbar(err instanceof Error ? err.message : t('places.deleteError'));
     } finally {
       setDeleting(false);
     }
@@ -82,7 +84,7 @@ export default function PlaceDetailsScreen() {
   }
 
   if (!place) {
-    return <NotFoundState title="Место не найдено" onBack={() => router.back()} />;
+    return <NotFoundState title={t('places.notFound')} onBack={() => router.back()} />;
   }
 
   return (
@@ -91,65 +93,65 @@ export default function PlaceDetailsScreen() {
         <Text variant="headlineSmall">{place.name}</Text>
 
         <View style={styles.chips}>
-          {place.visitlater ? <Chip icon="map-marker-path">Хочу посетить</Chip> : null}
-          {place.liked ? <Chip icon="heart">Понравилось</Chip> : null}
+          {place.visitlater ? <Chip icon="map-marker-path">{t('places.wantToVisit')}</Chip> : null}
+          {place.liked ? <Chip icon="heart">{t('places.liked')}</Chip> : null}
         </View>
 
         {place.description ? (
           <View style={styles.section}>
-            <Text variant="titleSmall">Описание</Text>
+            <Text variant="titleSmall">{t('common.description')}</Text>
             <Text variant="bodyLarge">{place.description}</Text>
           </View>
         ) : null}
 
         <View style={styles.section}>
-          <Text variant="titleSmall">Координаты</Text>
+          <Text variant="titleSmall">{t('common.coordinates')}</Text>
           <Text variant="bodyLarge">{formatCoordinates(place.dd)}</Text>
         </View>
 
         <View style={styles.section}>
-          <Text variant="titleSmall">Создано</Text>
+          <Text variant="titleSmall">{t('common.created')}</Text>
           <Text variant="bodyMedium">{formatDateTime(place.createdAt)}</Text>
         </View>
 
         <View style={styles.section}>
-          <Text variant="titleSmall">Фотографии</Text>
+          <Text variant="titleSmall">{t('common.photos')}</Text>
           <PhotoGallery photos={place.photos} />
         </View>
 
         <Text variant="bodySmall" style={styles.hint}>
-          Это место сохранено в базе и может быть добавлено в поездку при планировании маршрута.
+          {t('places.savedHint')}
         </Text>
 
         <View style={styles.actions}>
           {place.dd ? (
             <Button mode="contained" icon="map" onPress={handleOpenMap}>
-              Открыть на карте
+              {t('places.openMap')}
             </Button>
           ) : null}
           <Button mode="outlined" icon="pencil" onPress={() => router.push(`/places/${place.id}/edit`)}>
-            Редактировать
+            {t('common.edit')}
           </Button>
           <Button mode="outlined" icon="delete" textColor="#B00020" onPress={() => setDeleteVisible(true)}>
-            Удалить
+            {t('common.delete')}
           </Button>
         </View>
       </ScrollView>
 
       <Portal>
         <Dialog visible={deleteVisible} onDismiss={() => setDeleteVisible(false)}>
-          <Dialog.Title>Удалить место?</Dialog.Title>
+          <Dialog.Title>{t('places.deleteTitle')}</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyMedium">
-              «{place.name}» будет удалено без возможности восстановления.
+              {t('places.deleteMessage', { name: place.name })}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteVisible(false)} disabled={deleting}>
-              Отмена
+              {t('common.cancel')}
             </Button>
             <Button onPress={handleDelete} loading={deleting} textColor="#B00020">
-              Удалить
+              {t('common.delete')}
             </Button>
           </Dialog.Actions>
         </Dialog>

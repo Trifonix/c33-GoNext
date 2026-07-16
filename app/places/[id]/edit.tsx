@@ -2,6 +2,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { PlaceForm } from '@/src/components/PlaceForm';
 import { getPlaceById, updatePlace } from '@/src/db/placesRepo';
@@ -10,6 +11,7 @@ import type { Place } from '@/src/types';
 export default function EditPlaceScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [place, setPlace] = useState<Place | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,9 +47,9 @@ export default function EditPlaceScreen() {
   if (!place) {
     return (
       <View style={styles.centered}>
-        <Text variant="titleMedium">Место не найдено</Text>
+        <Text variant="titleMedium">{t('places.notFound')}</Text>
         <Button mode="contained" onPress={() => router.back()}>
-          Назад
+          {t('common.back')}
         </Button>
       </View>
     );
@@ -57,7 +59,7 @@ export default function EditPlaceScreen() {
     <View style={styles.container}>
       <PlaceForm
         initial={place}
-        submitLabel="Сохранить"
+        submitLabel={t('common.save')}
         onCancel={() => router.back()}
         onSubmit={async (input) => {
           await updatePlace(place.id, input);

@@ -3,16 +3,16 @@ import { MD3DarkTheme, MD3LightTheme, type MD3Theme } from 'react-native-paper';
 export type AppColorScheme = 'light' | 'dark';
 
 export const APP_PRIMARY_COLORS = [
-  { value: '#1B5E4A', label: 'Изумрудный' },
-  { value: '#1565C0', label: 'Синий' },
-  { value: '#283593', label: 'Индиго' },
-  { value: '#6A1B9A', label: 'Фиолетовый' },
-  { value: '#AD1457', label: 'Розовый' },
-  { value: '#C62828', label: 'Красный' },
-  { value: '#EF6C00', label: 'Оранжевый' },
-  { value: '#8D6E00', label: 'Янтарный' },
-  { value: '#00838F', label: 'Бирюзовый' },
-  { value: '#455A64', label: 'Серо-синий' },
+  { value: '#1B5E4A', labelKey: 'colors.emerald' },
+  { value: '#1565C0', labelKey: 'colors.blue' },
+  { value: '#283593', labelKey: 'colors.indigo' },
+  { value: '#6A1B9A', labelKey: 'colors.purple' },
+  { value: '#AD1457', labelKey: 'colors.pink' },
+  { value: '#C62828', labelKey: 'colors.red' },
+  { value: '#EF6C00', labelKey: 'colors.orange' },
+  { value: '#8D6E00', labelKey: 'colors.amber' },
+  { value: '#00838F', labelKey: 'colors.teal' },
+  { value: '#455A64', labelKey: 'colors.blueGrey' },
 ] as const;
 
 export type AppPrimaryColor = (typeof APP_PRIMARY_COLORS)[number]['value'];

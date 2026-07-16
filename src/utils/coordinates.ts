@@ -1,3 +1,4 @@
+import i18n from '@/src/i18n';
 import type { Coordinates } from '@/src/types';
 
 export function parseCoordinates(
@@ -11,20 +12,20 @@ export function parseCoordinates(
     return null;
   }
   if (!lat || !lng) {
-    throw new Error('Укажите и широту, и долготу');
+    throw new Error(i18n.t('errors.bothCoordinates'));
   }
 
   const latitude = Number.parseFloat(lat.replace(',', '.'));
   const longitude = Number.parseFloat(lng.replace(',', '.'));
 
   if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
-    throw new Error('Координаты должны быть числами');
+    throw new Error(i18n.t('errors.numericCoordinates'));
   }
   if (latitude < -90 || latitude > 90) {
-    throw new Error('Широта должна быть от −90 до 90');
+    throw new Error(i18n.t('errors.latitudeRange'));
   }
   if (longitude < -180 || longitude > 180) {
-    throw new Error('Долгота должна быть от −180 до 180');
+    throw new Error(i18n.t('errors.longitudeRange'));
   }
 
   return { latitude, longitude };
@@ -32,7 +33,7 @@ export function parseCoordinates(
 
 export function formatCoordinates(dd: Coordinates | null): string {
   if (!dd) {
-    return 'Не указаны';
+    return i18n.t('common.notSpecified');
   }
   return `${dd.latitude.toFixed(6)}, ${dd.longitude.toFixed(6)}`;
 }

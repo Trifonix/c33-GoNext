@@ -2,6 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Card, Chip, FAB, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/src/components/EmptyState';
 import { LoadingState } from '@/src/components/LoadingState';
@@ -10,6 +11,7 @@ import type { Trip } from '@/src/types';
 import { formatDateRange } from '@/src/utils/date';
 
 function TripListItem({ trip, onPress }: { trip: Trip; onPress: () => void }) {
+  const { t } = useTranslation();
   const visitedCount = trip.places.filter((p) => p.visited).length;
 
   return (
@@ -19,7 +21,7 @@ function TripListItem({ trip, onPress }: { trip: Trip; onPress: () => void }) {
           <Text variant="titleMedium" style={styles.title}>
             {trip.title}
           </Text>
-          {trip.current ? <Chip compact icon="star">Текущая</Chip> : null}
+          {trip.current ? <Chip compact icon="star">{t('trips.current')}</Chip> : null}
         </View>
         {trip.description ? (
           <Text variant="bodyMedium" numberOfLines={2} style={styles.description}>
@@ -30,8 +32,8 @@ function TripListItem({ trip, onPress }: { trip: Trip; onPress: () => void }) {
           {formatDateRange(trip.startDate, trip.endDate)}
         </Text>
         <Text variant="bodySmall" style={styles.meta}>
-          Мест в маршруте: {trip.places.length}
-          {trip.places.length > 0 ? ` · посещено ${visitedCount}` : ''}
+          {t('trips.routePlaces', { count: trip.places.length })}
+          {trip.places.length > 0 ? t('trips.visitedSuffix', { count: visitedCount }) : ''}
         </Text>
       </Card.Content>
     </Card>
@@ -40,6 +42,7 @@ function TripListItem({ trip, onPress }: { trip: Trip; onPress: () => void }) {
 
 export default function TripsListScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,10 +68,7 @@ export default function TripsListScreen() {
   return (
     <View style={styles.container}>
       {trips.length === 0 ? (
-        <EmptyState
-          title="Пока нет поездок"
-          message="Создайте поездку, добавьте места и ведите дневник по мере посещений."
-        />
+        <EmptyState title={t('trips.emptyTitle')} message={t('trips.emptyMessage')} />
       ) : (
         <FlatList
           data={trips}
@@ -82,7 +82,7 @@ export default function TripsListScreen() {
 
       <FAB
         icon="plus"
-        label="Создать"
+        label={t('trips.create')}
         style={styles.fab}
         onPress={() => router.push('/trips/new')}
       />

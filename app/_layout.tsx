@@ -2,16 +2,20 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useMemo } from 'react';
 import { PaperProvider } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { ScreenBackground } from '@/src/components/ScreenBackground';
 import { DatabaseProvider } from '@/src/context/DatabaseContext';
+import { LanguagePreferenceProvider } from '@/src/context/LanguagePreferenceContext';
 import {
   ThemePreferenceProvider,
   useThemePreference,
 } from '@/src/context/ThemePreferenceContext';
+import '@/src/i18n';
 import { createAppTheme } from '@/src/theme/appTheme';
 
 function ThemedRoot() {
+  const { t } = useTranslation();
   const { colorScheme, primaryColor } = useThemePreference();
   const theme = useMemo(
     () => createAppTheme(colorScheme, primaryColor),
@@ -39,20 +43,20 @@ function ThemedRoot() {
             }}
           >
             <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="places/index" options={{ title: 'Места' }} />
-            <Stack.Screen name="places/new" options={{ title: 'Новое место' }} />
-            <Stack.Screen name="places/[id]" options={{ title: 'Место' }} />
-            <Stack.Screen name="places/[id]/edit" options={{ title: 'Редактирование' }} />
-            <Stack.Screen name="trips/index" options={{ title: 'Поездки' }} />
-            <Stack.Screen name="trips/new" options={{ title: 'Новая поездка' }} />
-            <Stack.Screen name="trips/[id]" options={{ title: 'Поездка' }} />
-            <Stack.Screen name="trips/[id]/edit" options={{ title: 'Редактирование' }} />
+            <Stack.Screen name="places/index" options={{ title: t('navigation.places') }} />
+            <Stack.Screen name="places/new" options={{ title: t('navigation.newPlace') }} />
+            <Stack.Screen name="places/[id]" options={{ title: t('navigation.place') }} />
+            <Stack.Screen name="places/[id]/edit" options={{ title: t('navigation.edit') }} />
+            <Stack.Screen name="trips/index" options={{ title: t('navigation.trips') }} />
+            <Stack.Screen name="trips/new" options={{ title: t('navigation.newTrip') }} />
+            <Stack.Screen name="trips/[id]" options={{ title: t('navigation.trip') }} />
+            <Stack.Screen name="trips/[id]/edit" options={{ title: t('navigation.edit') }} />
             <Stack.Screen
               name="trips/[id]/place/[tripPlaceId]"
-              options={{ title: 'Запись дневника' }}
+              options={{ title: t('navigation.diaryEntry') }}
             />
-            <Stack.Screen name="next" options={{ title: 'Следующее место' }} />
-            <Stack.Screen name="settings" options={{ title: 'Настройки' }} />
+            <Stack.Screen name="next" options={{ title: t('navigation.nextPlace') }} />
+            <Stack.Screen name="settings" options={{ title: t('navigation.settings') }} />
           </Stack>
         </ScreenBackground>
       </DatabaseProvider>
@@ -62,8 +66,10 @@ function ThemedRoot() {
 
 export default function RootLayout() {
   return (
-    <ThemePreferenceProvider>
-      <ThemedRoot />
-    </ThemePreferenceProvider>
+    <LanguagePreferenceProvider>
+      <ThemePreferenceProvider>
+        <ThemedRoot />
+      </ThemePreferenceProvider>
+    </LanguagePreferenceProvider>
   );
 }

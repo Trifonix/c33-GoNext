@@ -1,5 +1,6 @@
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, IconButton, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   photos: string[];
@@ -18,10 +19,12 @@ export function PhotoGallery({
   onRemove,
   loading = false,
 }: Props) {
+  const { t } = useTranslation();
+
   if (photos.length === 0 && !editable) {
     return (
       <Text variant="bodyMedium" style={styles.empty}>
-        Фотографий нет
+        {t('gallery.empty')}
       </Text>
     );
   }
@@ -38,7 +41,7 @@ export function PhotoGallery({
             disabled={loading}
             style={styles.actionButton}
           >
-            Галерея
+            {t('gallery.gallery')}
           </Button>
           <Button
             mode="outlined"
@@ -48,14 +51,14 @@ export function PhotoGallery({
             disabled={loading}
             style={styles.actionButton}
           >
-            Камера
+            {t('gallery.camera')}
           </Button>
         </View>
       ) : null}
 
       {photos.length === 0 ? (
         <Text variant="bodyMedium" style={styles.empty}>
-          Добавьте фото из галереи или камеры
+          {t('gallery.hint')}
         </Text>
       ) : (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>

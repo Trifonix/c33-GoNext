@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 
+import i18n from '@/src/i18n';
 import { savePhotoFromUri } from '@/src/services/photos';
 
 export type PickPhotoResult =
@@ -26,7 +27,7 @@ async function ensureCameraPermission(): Promise<boolean> {
 
 export async function pickPhotoFromGallery(): Promise<PickPhotoResult> {
   if (!(await ensureLibraryPermission())) {
-    return { ok: false, reason: 'permission', message: 'Нет доступа к галерее' };
+    return { ok: false, reason: 'permission', message: i18n.t('errors.galleryPermission') };
   }
 
   const result = await ImagePicker.launchImageLibraryAsync({
@@ -46,14 +47,14 @@ export async function pickPhotoFromGallery(): Promise<PickPhotoResult> {
     return {
       ok: false,
       reason: 'error',
-      message: err instanceof Error ? err.message : 'Не удалось сохранить фото',
+      message: err instanceof Error ? err.message : i18n.t('errors.savePhoto'),
     };
   }
 }
 
 export async function pickPhotoFromCamera(): Promise<PickPhotoResult> {
   if (!(await ensureCameraPermission())) {
-    return { ok: false, reason: 'permission', message: 'Нет доступа к камере' };
+    return { ok: false, reason: 'permission', message: i18n.t('errors.cameraPermission') };
   }
 
   const result = await ImagePicker.launchCameraAsync({
@@ -73,7 +74,7 @@ export async function pickPhotoFromCamera(): Promise<PickPhotoResult> {
     return {
       ok: false,
       reason: 'error',
-      message: err instanceof Error ? err.message : 'Не удалось сохранить фото',
+      message: err instanceof Error ? err.message : i18n.t('errors.savePhoto'),
     };
   }
 }

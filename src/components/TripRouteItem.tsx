@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import { Card, Checkbox, Chip, IconButton, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import type { Place, TripPlace } from '@/src/types';
 import { formatDateTime } from '@/src/utils/date';
@@ -29,7 +30,8 @@ export function TripRouteItem({
   canMoveUp,
   canMoveDown,
 }: Props) {
-  const title = place?.name ?? 'Место удалено';
+  const { t } = useTranslation();
+  const title = place?.name ?? t('places.deleted');
   const visited = tripPlace.visited;
 
   if (showDiary && !visited) {
@@ -62,7 +64,7 @@ export function TripRouteItem({
             onPress={() => onToggleVisited(!visited)}
           />
           <Text variant="bodyMedium" onPress={() => onToggleVisited(!visited)}>
-            {visited ? 'Посещено' : 'Не посещено'}
+            {visited ? t('common.visited') : t('common.notVisited')}
           </Text>
           {visited && tripPlace.visitDate ? (
             <Chip compact icon="calendar-check" style={styles.chip}>
@@ -79,13 +81,13 @@ export function TripRouteItem({
 
         {tripPlace.photos.length > 0 ? (
           <Chip compact icon="image" style={styles.chip}>
-            {tripPlace.photos.length} фото
+            {t('common.photoCount', { count: tripPlace.photos.length })}
           </Chip>
         ) : null}
 
         {!showDiary ? (
           <Text variant="bodySmall" style={styles.hint}>
-            Нажмите, чтобы добавить заметки и фото
+            {t('route.notesHint')}
           </Text>
         ) : null}
       </Card.Content>

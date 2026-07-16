@@ -1,16 +1,19 @@
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   message?: string;
 };
 
-export function LoadingState({ message = 'Загрузка…' }: Props) {
+export function LoadingState({ message }: Props) {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" />
       <Text variant="bodyMedium" style={styles.message}>
-        {message}
+        {message ?? t('common.loading')}
       </Text>
     </View>
   );

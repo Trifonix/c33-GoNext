@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Switch, Text, TextInput } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { PhotoGallery } from '@/src/components/PhotoGallery';
 import { pickPhotoFromCamera, pickPhotoFromGallery } from '@/src/services/imagePicker';
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
+  const { t } = useTranslation();
   const initialCoords = coordinatesToFields(initial?.dd ?? null);
 
   const [name, setName] = useState(initial?.name ?? '');
@@ -41,7 +43,7 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
       return;
     }
     if (result.reason === 'permission' || result.reason === 'error') {
-      setError(result.message ?? 'Не удалось добавить фото');
+      setError(result.message ?? t('forms.addPhotoError'));
     }
   }
 
@@ -54,7 +56,7 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
 
     const trimmedName = name.trim();
     if (!trimmedName) {
-      setError('Введите название места');
+      setError(t('forms.placeNameRequired'));
       return;
     }
 
@@ -62,7 +64,7 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
     try {
       dd = parseCoordinates(latitude, longitude);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Некорректные координаты');
+      setError(err instanceof Error ? err.message : t('forms.invalidCoordinates'));
       return;
     }
 
@@ -81,7 +83,7 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
         await Promise.all(removedPhotos.map((uri) => deletePhoto(uri)));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Не удалось сохранить место');
+      setError(err instanceof Error ? err.message : t('forms.savePlaceError'));
     } finally {
       setSaving(false);
     }
@@ -90,14 +92,14 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
   return (
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <TextInput
-        label="Название *"
+        label={t('forms.nameRequired')}
         value={name}
         onChangeText={setName}
         mode="outlined"
         style={styles.field}
       />
       <TextInput
-        label="Описание"
+        label={t('forms.description')}
         value={description}
         onChangeText={setDescription}
         mode="outlined"
@@ -107,20 +109,20 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
       />
 
       <View style={styles.switchRow}>
-        <Text variant="bodyLarge">Хочу посетить</Text>
+        <Text variant="bodyLarge">{t('places.wantToVisit')}</Text>
         <Switch value={visitlater} onValueChange={setVisitlater} />
       </View>
       <View style={styles.switchRow}>
-        <Text variant="bodyLarge">Понравилось</Text>
+        <Text variant="bodyLarge">{t('places.liked')}</Text>
         <Switch value={liked} onValueChange={setLiked} />
       </View>
 
       <Text variant="titleSmall" style={styles.sectionTitle}>
-        Координаты (Decimal Degrees)
+        {t('forms.coordinatesTitle')}
       </Text>
       <View style={styles.coordRow}>
         <TextInput
-          label="Широта"
+          label={t('forms.latitude')}
           value={latitude}
           onChangeText={setLatitude}
           mode="outlined"
@@ -129,7 +131,7 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
           style={styles.coordField}
         />
         <TextInput
-          label="Долгота"
+          label={t('forms.longitude')}
           value={longitude}
           onChangeText={setLongitude}
           mode="outlined"
@@ -140,7 +142,7 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
       </View>
 
       <Text variant="titleSmall" style={styles.sectionTitle}>
-        Фотографии
+        {t('common.photos')}
       </Text>
       <PhotoGallery
         photos={photos}
@@ -160,7 +162,7 @@ export function PlaceForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
       <View style={styles.buttons}>
         {onCancel ? (
           <Button mode="outlined" onPress={onCancel} disabled={saving} style={styles.button}>
-            Отмена
+            {t('common.cancel')}
           </Button>
         ) : null}
         <Button mode="contained" onPress={handleSubmit} loading={saving} disabled={saving} style={styles.button}>

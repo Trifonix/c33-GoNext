@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Switch, Text, TextInput } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { DateInput } from '@/src/components/DateInput';
 import type { Trip, TripInput } from '@/src/types';
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export function TripForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(initial?.title ?? '');
   const [description, setDescription] = useState(initial?.description ?? '');
   const [startDate, setStartDate] = useState<string | null>(initial?.startDate ?? null);
@@ -25,11 +27,11 @@ export function TripForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
     setError(null);
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      setError('Введите название поездки');
+      setError(t('forms.tripTitleRequired'));
       return;
     }
     if (startDate && endDate && startDate > endDate) {
-      setError('Дата начала не может быть позже даты окончания');
+      setError(t('forms.invalidDateRange'));
       return;
     }
 
@@ -43,7 +45,7 @@ export function TripForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
         current,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Не удалось сохранить поездку');
+      setError(err instanceof Error ? err.message : t('forms.saveTripError'));
     } finally {
       setSaving(false);
     }
@@ -52,14 +54,14 @@ export function TripForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
   return (
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <TextInput
-        label="Название *"
+        label={t('forms.nameRequired')}
         value={title}
         onChangeText={setTitle}
         mode="outlined"
         style={styles.field}
       />
       <TextInput
-        label="Описание"
+        label={t('forms.description')}
         value={description}
         onChangeText={setDescription}
         mode="outlined"
@@ -68,14 +70,14 @@ export function TripForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
         style={styles.field}
       />
 
-      <DateInput label="Дата начала" value={startDate} onChange={setStartDate} />
-      <DateInput label="Дата окончания" value={endDate} onChange={setEndDate} />
+      <DateInput label={t('forms.startDate')} value={startDate} onChange={setStartDate} />
+      <DateInput label={t('forms.endDate')} value={endDate} onChange={setEndDate} />
 
       <View style={styles.switchRow}>
         <View style={styles.switchText}>
-          <Text variant="bodyLarge">Текущая поездка</Text>
+          <Text variant="bodyLarge">{t('common.currentTrip')}</Text>
           <Text variant="bodySmall" style={styles.hint}>
-            Только одна поездка может быть текущей
+            {t('forms.onlyOneCurrent')}
           </Text>
         </View>
         <Switch value={current} onValueChange={setCurrent} />
@@ -90,7 +92,7 @@ export function TripForm({ initial, submitLabel, onSubmit, onCancel }: Props) {
       <View style={styles.buttons}>
         {onCancel ? (
           <Button mode="outlined" onPress={onCancel} disabled={saving} style={styles.button}>
-            Отмена
+            {t('common.cancel')}
           </Button>
         ) : null}
         <Button mode="contained" onPress={handleSubmit} loading={saving} disabled={saving} style={styles.button}>

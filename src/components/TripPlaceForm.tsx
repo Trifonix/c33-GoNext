@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Switch, Text, TextInput } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { PhotoGallery } from '@/src/components/PhotoGallery';
 import { pickPhotoFromCamera, pickPhotoFromGallery } from '@/src/services/imagePicker';
@@ -25,10 +26,11 @@ type Props = {
 export function TripPlaceForm({
   initial,
   placeName,
-  submitLabel = 'Сохранить',
+  submitLabel,
   onSubmit,
   onCancel,
 }: Props) {
+  const { t } = useTranslation();
   const [visited, setVisited] = useState(initial.visited);
   const [notes, setNotes] = useState(initial.notes);
   const [photos, setPhotos] = useState(initial.photos);
@@ -48,7 +50,7 @@ export function TripPlaceForm({
       return;
     }
     if (result.reason === 'permission' || result.reason === 'error') {
-      setError(result.message ?? 'Не удалось добавить фото');
+      setError(result.message ?? t('forms.addPhotoError'));
     }
   }
 
@@ -62,7 +64,7 @@ export function TripPlaceForm({
         await Promise.all(removedPhotos.map((uri) => deletePhoto(uri)));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Не удалось сохранить');
+      setError(err instanceof Error ? err.message : t('forms.saveError'));
     } finally {
       setSaving(false);
     }
@@ -78,27 +80,27 @@ export function TripPlaceForm({
 
       {initial.visitDate && visited ? (
         <Text variant="bodyMedium" style={styles.meta}>
-          Посещено: {formatDateTime(initial.visitDate)}
+          {t('forms.visitedAt', { date: formatDateTime(initial.visitDate) })}
         </Text>
       ) : null}
 
       <View style={styles.switchRow}>
-        <Text variant="bodyLarge">Место посещено</Text>
+        <Text variant="bodyLarge">{t('forms.placeVisited')}</Text>
         <Switch value={visited} onValueChange={setVisited} />
       </View>
 
       <TextInput
-        label="Заметки"
+        label={t('forms.notes')}
         value={notes}
         onChangeText={setNotes}
         mode="outlined"
         multiline
         numberOfLines={6}
-        placeholder="Впечатления, детали визита…"
+        placeholder={t('forms.notesPlaceholder')}
         style={styles.field}
       />
 
-      <Text variant="titleSmall">Фото визита</Text>
+      <Text variant="titleSmall">{t('forms.visitPhotos')}</Text>
       <PhotoGallery
         photos={photos}
         editable
@@ -117,11 +119,11 @@ export function TripPlaceForm({
       <View style={styles.buttons}>
         {onCancel ? (
           <Button mode="outlined" onPress={onCancel} disabled={saving} style={styles.button}>
-            Отмена
+            {t('common.cancel')}
           </Button>
         ) : null}
         <Button mode="contained" onPress={handleSubmit} loading={saving} disabled={saving} style={styles.button}>
-          {submitLabel}
+          {submitLabel ?? t('common.save')}
         </Button>
       </View>
     </ScrollView>

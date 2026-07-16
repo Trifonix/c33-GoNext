@@ -2,6 +2,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { TripPlaceForm } from '@/src/components/TripPlaceForm';
 import {
@@ -15,6 +16,7 @@ import type { TripPlaceEnriched } from '@/src/services/tripPlaces';
 export default function TripPlaceDiaryScreen() {
   const { id, tripPlaceId } = useLocalSearchParams<{ id: string; tripPlaceId: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [entry, setEntry] = useState<TripPlaceEnriched | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,9 +52,9 @@ export default function TripPlaceDiaryScreen() {
   if (!entry || entry.tripId !== id) {
     return (
       <View style={styles.centered}>
-        <Text variant="titleMedium">Запись не найдена</Text>
+        <Text variant="titleMedium">{t('common.notFound')}</Text>
         <Button mode="contained" onPress={() => router.back()}>
-          Назад
+          {t('common.back')}
         </Button>
       </View>
     );

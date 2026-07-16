@@ -2,6 +2,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { TripForm } from '@/src/components/TripForm';
 import { getTripById, updateTrip } from '@/src/db/tripsRepo';
@@ -10,6 +11,7 @@ import type { Trip } from '@/src/types';
 export default function EditTripScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,9 +47,9 @@ export default function EditTripScreen() {
   if (!trip) {
     return (
       <View style={styles.centered}>
-        <Text variant="titleMedium">Поездка не найдена</Text>
+        <Text variant="titleMedium">{t('trips.notFound')}</Text>
         <Button mode="contained" onPress={() => router.back()}>
-          Назад
+          {t('common.back')}
         </Button>
       </View>
     );
@@ -57,7 +59,7 @@ export default function EditTripScreen() {
     <View style={styles.container}>
       <TripForm
         initial={trip}
-        submitLabel="Сохранить"
+        submitLabel={t('common.save')}
         onCancel={() => router.back()}
         onSubmit={async (input) => {
           await updateTrip(trip.id, input);

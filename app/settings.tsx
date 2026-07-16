@@ -8,7 +8,12 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
+import {
+  useLanguagePreference,
+  type AppLanguage,
+} from '@/src/context/LanguagePreferenceContext';
 import { useThemePreference } from '@/src/context/ThemePreferenceContext';
 import {
   APP_PRIMARY_COLORS,
@@ -17,9 +22,11 @@ import {
 } from '@/src/theme/appTheme';
 
 export default function SettingsScreen() {
+  const { t } = useTranslation();
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const appName = Constants.expoConfig?.name ?? 'GoNext';
   const theme = useTheme();
+  const { language, setLanguage } = useLanguagePreference();
   const { colorScheme, setColorScheme, primaryColor, setPrimaryColor } =
     useThemePreference();
 
@@ -27,16 +34,16 @@ export default function SettingsScreen() {
     <ScrollView contentContainerStyle={styles.content}>
       <Text variant="headlineSmall">{appName}</Text>
       <Text variant="bodyMedium" style={styles.lead}>
-        Дневник туриста — планируйте поездки и ведите маршрут офлайн.
+        {t('settings.lead')}
       </Text>
 
       <Divider style={styles.divider} />
 
       <List.Section>
-        <List.Subheader>Оформление</List.Subheader>
+        <List.Subheader>{t('settings.appearance')}</List.Subheader>
         <View style={styles.themeBlock}>
           <Text variant="titleSmall" style={styles.themeLabel}>
-            Тема
+            {t('settings.theme')}
           </Text>
           <SegmentedButtons
             value={colorScheme}
@@ -46,22 +53,22 @@ export default function SettingsScreen() {
             buttons={[
               {
                 value: 'light',
-                label: 'Светлая',
+                label: t('settings.light'),
                 icon: 'white-balance-sunny',
               },
               {
                 value: 'dark',
-                label: 'Тёмная',
+                label: t('settings.dark'),
                 icon: 'moon-waning-crescent',
               },
             ]}
           />
           <Text variant="bodySmall" style={styles.themeHint}>
-            В тёмной теме фоновое изображение скрывается.
+            {t('settings.darkHint')}
           </Text>
 
           <Text variant="titleSmall" style={styles.colorLabel}>
-            Основной цвет
+            {t('settings.primaryColor')}
           </Text>
           <View
             accessibilityRole="radiogroup"
@@ -73,7 +80,7 @@ export default function SettingsScreen() {
               return (
                 <Pressable
                   key={color.value}
-                  accessibilityLabel={color.label}
+                  accessibilityLabel={t(color.labelKey)}
                   accessibilityRole="radio"
                   accessibilityState={{ checked: selected }}
                   hitSlop={4}
@@ -94,26 +101,40 @@ export default function SettingsScreen() {
               );
             })}
           </View>
+
+          <Text variant="titleSmall" style={styles.colorLabel}>
+            {t('settings.language')}
+          </Text>
+          <SegmentedButtons
+            value={language}
+            onValueChange={(value) => {
+              void setLanguage(value as AppLanguage);
+            }}
+            buttons={[
+              { value: 'ru', label: t('settings.russian') },
+              { value: 'en', label: t('settings.english') },
+            ]}
+          />
         </View>
       </List.Section>
 
       <Divider style={styles.divider} />
 
       <List.Section>
-        <List.Subheader>О приложении</List.Subheader>
+        <List.Subheader>{t('settings.about')}</List.Subheader>
         <List.Item
-          title="Версия"
+          title={t('settings.version')}
           description={version}
           left={(props) => <List.Icon {...props} icon="information-outline" />}
         />
         <List.Item
-          title="Работа офлайн"
-          description="Интернет не требуется. Все данные хранятся на устройстве."
+          title={t('settings.offline')}
+          description={t('settings.offlineDescription')}
           left={(props) => <List.Icon {...props} icon="wifi-off" />}
         />
         <List.Item
-          title="Без регистрации"
-          description="Нет аккаунтов и серверной части — только локальная база SQLite и фото."
+          title={t('settings.noRegistration')}
+          description={t('settings.noRegistrationDescription')}
           left={(props) => <List.Icon {...props} icon="shield-check-outline" />}
         />
       </List.Section>
@@ -121,22 +142,21 @@ export default function SettingsScreen() {
       <Divider style={styles.divider} />
 
       <List.Section>
-        <List.Subheader>Как пользоваться</List.Subheader>
+        <List.Subheader>{t('settings.howTo')}</List.Subheader>
         <View style={styles.guide}>
-          <Text variant="titleSmall">1. Места</Text>
+          <Text variant="titleSmall">{t('settings.guidePlacesTitle')}</Text>
           <Text variant="bodyMedium" style={styles.guideText}>
-            Сохраняйте интересные места с описанием, координатами и фото — независимо от поездок.
+            {t('settings.guidePlaces')}
           </Text>
 
-          <Text variant="titleSmall">2. Поездки</Text>
+          <Text variant="titleSmall">{t('settings.guideTripsTitle')}</Text>
           <Text variant="bodyMedium" style={styles.guideText}>
-            Создайте маршрут с датами, добавьте места, отметьте одну поездку как текущую. Ведите
-            дневник: заметки и фото к каждому визиту.
+            {t('settings.guideTrips')}
           </Text>
 
-          <Text variant="titleSmall">3. Следующее место</Text>
+          <Text variant="titleSmall">{t('settings.guideNextTitle')}</Text>
           <Text variant="bodyMedium" style={styles.guideText}>
-            Быстрый доступ к следующей точке текущей поездки — карта, навигатор и отметка «посещено».
+            {t('settings.guideNext')}
           </Text>
         </View>
       </List.Section>
@@ -144,21 +164,21 @@ export default function SettingsScreen() {
       <Divider style={styles.divider} />
 
       <List.Section>
-        <List.Subheader>Хранение данных</List.Subheader>
+        <List.Subheader>{t('settings.storage')}</List.Subheader>
         <List.Item
-          title="База данных"
-          description="SQLite — места, поездки, маршруты и записи дневника."
+          title={t('settings.database')}
+          description={t('settings.databaseDescription')}
           left={(props) => <List.Icon {...props} icon="database-outline" />}
         />
         <List.Item
-          title="Фотографии"
-          description="Локальный каталог приложения; пути сохраняются в базе."
+          title={t('settings.photographs')}
+          description={t('settings.photographsDescription')}
           left={(props) => <List.Icon {...props} icon="image-outline" />}
         />
       </List.Section>
 
       <Text variant="bodySmall" style={styles.footer}>
-        MVP GoNext · экспорт, синхронизация и совместные поездки — в планах на будущее.
+        {t('settings.footer')}
       </Text>
     </ScrollView>
   );

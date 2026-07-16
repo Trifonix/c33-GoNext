@@ -8,6 +8,7 @@ import {
   RadioButton,
   Text,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { listPlaces } from '@/src/db/placesRepo';
 import type { Place } from '@/src/types';
@@ -30,8 +31,9 @@ export function PlacePicker({
   onDismiss,
   onSelect,
   excludeIds = [],
-  title = 'Выберите место',
+  title,
 }: Props) {
+  const { t } = useTranslation();
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -65,13 +67,13 @@ export function PlacePicker({
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={onDismiss} style={styles.dialog}>
-        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Title>{title ?? t('picker.title')}</Dialog.Title>
         <Dialog.Content style={styles.content}>
           {loading ? (
             <ActivityIndicator style={styles.loader} />
           ) : places.length === 0 ? (
             <Text variant="bodyMedium" style={styles.empty}>
-              Нет доступных мест. Сначала добавьте места в разделе «Места».
+              {t('picker.empty')}
             </Text>
           ) : (
             <FlatList
@@ -91,9 +93,9 @@ export function PlacePicker({
           )}
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={onDismiss}>Отмена</Button>
+          <Button onPress={onDismiss}>{t('common.cancel')}</Button>
           <Button onPress={handleConfirm} disabled={!selectedId}>
-            Выбрать
+            {t('common.select')}
           </Button>
         </Dialog.Actions>
       </Dialog>

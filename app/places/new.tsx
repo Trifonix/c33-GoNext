@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { PlaceForm } from '@/src/components/PlaceForm';
 import { addPlaceToTrip } from '@/src/db/tripPlacesRepo';
@@ -7,12 +8,13 @@ import { createPlace } from '@/src/db/placesRepo';
 
 export default function NewPlaceScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { tripId } = useLocalSearchParams<{ tripId?: string }>();
 
   return (
     <View style={styles.container}>
       <PlaceForm
-        submitLabel={tripId ? 'Создать и добавить' : 'Создать'}
+        submitLabel={tripId ? t('places.createAndAdd') : t('places.create')}
         onCancel={() => router.back()}
         onSubmit={async (input) => {
           const place = await createPlace(input);

@@ -1,3 +1,4 @@
+import i18n from '@/src/i18n';
 import type { TripPlace, TripPlaceInput } from '@/src/types';
 
 import { deletePhotos } from '@/src/services/photos';
@@ -35,7 +36,7 @@ export async function addPlaceToTrip(
     input.placeId,
   );
   if (duplicate) {
-    throw new Error('Это место уже добавлено в поездку');
+    throw new Error(i18n.t('errors.duplicateTripPlace'));
   }
 
   const id = createId();
@@ -64,7 +65,7 @@ export async function addPlaceToTrip(
 
   const tripPlace = await getTripPlaceById(id);
   if (!tripPlace) {
-    throw new Error('Не удалось добавить место в поездку');
+    throw new Error(i18n.t('errors.addTripPlace'));
   }
   return tripPlace;
 }
@@ -93,13 +94,13 @@ export async function moveTripPlace(
 ): Promise<TripPlace[]> {
   const current = await getTripPlaceById(tripPlaceId);
   if (!current) {
-    throw new Error('Место в поездке не найдено');
+    throw new Error(i18n.t('errors.tripPlaceNotFound'));
   }
 
   const places = await listTripPlaces(current.tripId);
   const index = places.findIndex((item) => item.id === tripPlaceId);
   if (index < 0) {
-    throw new Error('Место в поездке не найдено');
+    throw new Error(i18n.t('errors.tripPlaceNotFound'));
   }
 
   const swapWith = direction === 'up' ? index - 1 : index + 1;
@@ -122,7 +123,7 @@ export async function markTripPlaceVisited(
 ): Promise<TripPlace> {
   const existing = await getTripPlaceById(tripPlaceId);
   if (!existing) {
-    throw new Error('Место в поездке не найдено');
+    throw new Error(i18n.t('errors.tripPlaceNotFound'));
   }
 
   const nextVisitDate = visited
@@ -139,7 +140,7 @@ export async function markTripPlaceVisited(
 
   const updated = await getTripPlaceById(tripPlaceId);
   if (!updated) {
-    throw new Error('Не удалось обновить место в поездке');
+    throw new Error(i18n.t('errors.updateTripPlace'));
   }
   return updated;
 }
@@ -152,7 +153,7 @@ export async function updateTripPlaceNotes(
   await db.runAsync('UPDATE trip_places SET notes = ? WHERE id = ?', notes.trim(), tripPlaceId);
   const updated = await getTripPlaceById(tripPlaceId);
   if (!updated) {
-    throw new Error('Место в поездке не найдено');
+    throw new Error(i18n.t('errors.tripPlaceNotFound'));
   }
   return updated;
 }
@@ -169,7 +170,7 @@ export async function updateTripPlacePhotos(
   );
   const updated = await getTripPlaceById(tripPlaceId);
   if (!updated) {
-    throw new Error('Место в поездке не найдено');
+    throw new Error(i18n.t('errors.tripPlaceNotFound'));
   }
   return updated;
 }

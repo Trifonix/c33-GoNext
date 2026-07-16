@@ -1,9 +1,10 @@
 import { Linking, Platform } from 'react-native';
 
+import i18n from '@/src/i18n';
 import type { Coordinates } from '@/src/types';
 
 function encodeLabel(label?: string): string {
-  return encodeURIComponent(label?.trim() || 'Место');
+  return encodeURIComponent(label?.trim() || i18n.t('common.place'));
 }
 
 /** Открыть точку на карте (просмотр). */

@@ -2,6 +2,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { dateToIso, formatDate, isoToDate } from '@/src/utils/date';
 
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function DateInput({ label, value, onChange }: Props) {
+  const { t } = useTranslation();
   const [showPicker, setShowPicker] = useState(false);
   const dateValue = isoToDate(value) ?? new Date();
 
@@ -35,11 +37,11 @@ export function DateInput({ label, value, onChange }: Props) {
           {formatDate(value)}
         </Text>
         <Button mode="outlined" compact onPress={() => setShowPicker(true)}>
-          Выбрать
+          {t('common.select')}
         </Button>
         {value ? (
           <Button mode="text" compact onPress={() => onChange(null)}>
-            Сброс
+            {t('common.reset')}
           </Button>
         ) : null}
       </View>
@@ -52,7 +54,7 @@ export function DateInput({ label, value, onChange }: Props) {
         />
       ) : null}
       {Platform.OS === 'ios' && showPicker ? (
-        <Button onPress={() => setShowPicker(false)}>Готово</Button>
+        <Button onPress={() => setShowPicker(false)}>{t('common.done')}</Button>
       ) : null}
     </View>
   );

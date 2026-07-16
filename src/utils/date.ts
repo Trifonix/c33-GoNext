@@ -1,6 +1,12 @@
+import i18n from '@/src/i18n';
+
+function getLocale(): 'ru-RU' | 'en-US' {
+  return i18n.resolvedLanguage?.startsWith('en') ? 'en-US' : 'ru-RU';
+}
+
 export function formatDateTime(iso: string): string {
   try {
-    return new Date(iso).toLocaleString('ru-RU', {
+    return new Date(iso).toLocaleString(getLocale(), {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -17,7 +23,7 @@ export function formatDate(iso: string | null): string {
     return '—';
   }
   try {
-    return new Date(iso.includes('T') ? iso : `${iso}T00:00:00`).toLocaleDateString('ru-RU', {
+    return new Date(iso.includes('T') ? iso : `${iso}T00:00:00`).toLocaleDateString(getLocale(), {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -44,10 +50,12 @@ export function isoToDate(iso: string | null): Date | null {
 
 export function formatDateRange(start: string | null, end: string | null): string {
   if (!start && !end) {
-    return 'Даты не указаны';
+    return i18n.t('date.notSpecified');
   }
   if (start && end) {
     return `${formatDate(start)} — ${formatDate(end)}`;
   }
-  return start ? `с ${formatDate(start)}` : `до ${formatDate(end)}`;
+  return start
+    ? i18n.t('date.from', { date: formatDate(start) })
+    : i18n.t('date.until', { date: formatDate(end) });
 }

@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   title?: string;
@@ -9,15 +10,17 @@ type Props = {
 };
 
 export function NotFoundState({
-  title = 'Не найдено',
+  title,
   message,
   onBack,
-  backLabel = 'Назад',
+  backLabel,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <Text variant="titleMedium" style={styles.title}>
-        {title}
+        {title ?? t('common.notFound')}
       </Text>
       {message ? (
         <Text variant="bodyMedium" style={styles.message}>
@@ -26,7 +29,7 @@ export function NotFoundState({
       ) : null}
       {onBack ? (
         <Button mode="contained" onPress={onBack} style={styles.button}>
-          {backLabel}
+          {backLabel ?? t('common.back')}
         </Button>
       ) : null}
     </View>

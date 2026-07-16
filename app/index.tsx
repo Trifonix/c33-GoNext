@@ -1,12 +1,14 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text, useTheme } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 import { useThemePreference } from '@/src/context/ThemePreferenceContext';
 
 export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
+  const { t } = useTranslation();
   const { colorScheme } = useThemePreference();
   const headerBackground =
     colorScheme === 'dark' ? theme.colors.elevation.level2 : 'rgba(255, 255, 255, 0.85)';
@@ -14,7 +16,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Appbar.Header elevated style={{ backgroundColor: headerBackground }}>
-        <Appbar.Content title="GoNext" subtitle="Дневник туриста" />
+        <Appbar.Content title="GoNext" subtitle={t('home.subtitle')} />
       </Appbar.Header>
 
       <View style={styles.content}>
@@ -22,21 +24,21 @@ export default function HomeScreen() {
           GoNext
         </Text>
         <Text variant="bodyLarge" style={styles.subtitle}>
-          От мест — к поездкам — к дневному маршруту
+          {t('home.tagline')}
         </Text>
 
         <View style={styles.buttons}>
           <Button mode="contained" onPress={() => router.push('/places')} contentStyle={styles.buttonContent}>
-            Места
+            {t('common.places')}
           </Button>
           <Button mode="contained" onPress={() => router.push('/trips')} contentStyle={styles.buttonContent}>
-            Поездки
+            {t('common.trips')}
           </Button>
           <Button mode="contained" onPress={() => router.push('/next')} contentStyle={styles.buttonContent}>
-            Следующее место
+            {t('navigation.nextPlace')}
           </Button>
           <Button mode="outlined" onPress={() => router.push('/settings')} contentStyle={styles.buttonContent}>
-            Настройки
+            {t('common.settings')}
           </Button>
         </View>
       </View>
