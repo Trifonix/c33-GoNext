@@ -1,14 +1,27 @@
 import Constants from 'expo-constants';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Divider, List, SegmentedButtons, Text } from 'react-native-paper';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Divider,
+  Icon,
+  List,
+  SegmentedButtons,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 
 import { useThemePreference } from '@/src/context/ThemePreferenceContext';
-import type { AppColorScheme } from '@/src/theme/appTheme';
+import {
+  APP_PRIMARY_COLORS,
+  type AppColorScheme,
+  type AppPrimaryColor,
+} from '@/src/theme/appTheme';
 
 export default function SettingsScreen() {
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const appName = Constants.expoConfig?.name ?? 'GoNext';
-  const { colorScheme, setColorScheme } = useThemePreference();
+  const theme = useTheme();
+  const { colorScheme, setColorScheme, primaryColor, setPrimaryColor } =
+    useThemePreference();
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
@@ -46,6 +59,41 @@ export default function SettingsScreen() {
           <Text variant="bodySmall" style={styles.themeHint}>
             В тёмной теме фоновое изображение скрывается.
           </Text>
+
+          <Text variant="titleSmall" style={styles.colorLabel}>
+            Основной цвет
+          </Text>
+          <View
+            accessibilityRole="radiogroup"
+            style={styles.colorPalette}
+          >
+            {APP_PRIMARY_COLORS.map((color) => {
+              const selected = color.value === primaryColor;
+
+              return (
+                <Pressable
+                  key={color.value}
+                  accessibilityLabel={color.label}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: selected }}
+                  hitSlop={4}
+                  onPress={() => {
+                    void setPrimaryColor(color.value as AppPrimaryColor);
+                  }}
+                  style={[
+                    styles.colorButton,
+                    { backgroundColor: color.value },
+                    selected && {
+                      borderColor: theme.colors.onSurface,
+                      borderWidth: 3,
+                    },
+                  ]}
+                >
+                  {selected ? <Icon source="check" color="#FFFFFF" size={22} /> : null}
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       </List.Section>
 
@@ -138,6 +186,21 @@ const styles = StyleSheet.create({
   },
   themeHint: {
     opacity: 0.65,
+  },
+  colorLabel: {
+    marginTop: 10,
+  },
+  colorPalette: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 14,
+  },
+  colorButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   guide: {
     paddingHorizontal: 16,

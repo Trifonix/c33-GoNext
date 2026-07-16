@@ -12,8 +12,11 @@ import {
 import { createAppTheme } from '@/src/theme/appTheme';
 
 function ThemedRoot() {
-  const { colorScheme } = useThemePreference();
-  const theme = useMemo(() => createAppTheme(colorScheme), [colorScheme]);
+  const { colorScheme, primaryColor } = useThemePreference();
+  const theme = useMemo(
+    () => createAppTheme(colorScheme, primaryColor),
+    [colorScheme, primaryColor],
+  );
   const isDark = colorScheme === 'dark';
 
   return (

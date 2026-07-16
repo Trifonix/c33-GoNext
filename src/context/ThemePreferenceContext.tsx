@@ -10,13 +10,21 @@ import {
 } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import type { AppColorScheme } from '@/src/theme/appTheme';
+import {
+  APP_PRIMARY_COLORS,
+  DEFAULT_PRIMARY_COLOR,
+  type AppColorScheme,
+  type AppPrimaryColor,
+} from '@/src/theme/appTheme';
 
-const STORAGE_KEY = 'gonext.colorScheme';
+const COLOR_SCHEME_STORAGE_KEY = 'gonext.colorScheme';
+const PRIMARY_COLOR_STORAGE_KEY = 'gonext.primaryColor';
 
 type ThemePreferenceContextValue = {
   colorScheme: AppColorScheme;
   setColorScheme: (scheme: AppColorScheme) => Promise<void>;
+  primaryColor: AppPrimaryColor;
+  setPrimaryColor: (color: AppPrimaryColor) => Promise<void>;
   ready: boolean;
 };
 
@@ -26,8 +34,14 @@ function isAppColorScheme(value: string | null): value is AppColorScheme {
   return value === 'light' || value === 'dark';
 }
 
+function isAppPrimaryColor(value: string | null): value is AppPrimaryColor {
+  return APP_PRIMARY_COLORS.some((color) => color.value === value);
+}
+
 export function ThemePreferenceProvider({ children }: PropsWithChildren) {
   const [colorScheme, setColorSchemeState] = useState<AppColorScheme>('light');
+  const [primaryColor, setPrimaryColorState] =
+    useState<AppPrimaryColor>(DEFAULT_PRIMARY_COLOR);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -35,9 +49,19 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
 
     (async () => {
       try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (!cancelled && isAppColorScheme(stored)) {
-          setColorSchemeState(stored);
+        const [storedScheme, storedPrimaryColor] = await AsyncStorage.multiGet([
+          COLOR_SCHEME_STORAGE_KEY,
+          PRIMARY_COLOR_STORAGE_KEY,
+        ]);
+        if (!cancelled) {
+          const scheme = storedScheme[1];
+          const color = storedPrimaryColor[1];
+          if (isAppColorScheme(scheme)) {
+            setColorSchemeState(scheme);
+          }
+          if (isAppPrimaryColor(color)) {
+            setPrimaryColorState(color);
+          }
         }
       } finally {
         if (!cancelled) {
@@ -53,12 +77,23 @@ export function ThemePreferenceProvider({ children }: PropsWithChildren) {
 
   const setColorScheme = useCallback(async (scheme: AppColorScheme) => {
     setColorSchemeState(scheme);
-    await AsyncStorage.setItem(STORAGE_KEY, scheme);
+    await AsyncStorage.setItem(COLOR_SCHEME_STORAGE_KEY, scheme);
+  }, []);
+
+  const setPrimaryColor = useCallback(async (color: AppPrimaryColor) => {
+    setPrimaryColorState(color);
+    await AsyncStorage.setItem(PRIMARY_COLOR_STORAGE_KEY, color);
   }, []);
 
   const value = useMemo(
-    () => ({ colorScheme, setColorScheme, ready }),
-    [colorScheme, setColorScheme, ready],
+    () => ({
+      colorScheme,
+      setColorScheme,
+      primaryColor,
+      setPrimaryColor,
+      ready,
+    }),
+    [colorScheme, setColorScheme, primaryColor, setPrimaryColor, ready],
   );
 
   if (!ready) {
